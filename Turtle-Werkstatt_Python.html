@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Selbstlerneinheit Python fuer Jahrgang 11: Schleifen, Funktionen, Variablen und Parameter, bedingte Anweisungen mit gturtle.">
+<title>Turtle-Werkstatt Python</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<style>
+html{color-scheme:light dark}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+/* ---------- Tokens: light ---------- */
+:root{
+  --paper:#eaeef4;
+  --surface:#ffffff;
+  --surface-2:#f4f7fb;
+  --ink:#111d2e;
+  --ink-2:#48586e;
+  --ink-3:#78889c;
+  --line:#d2dae5;
+  --line-soft:#e3e9f1;
+  --pen:#1b46d6;
+  --pen-soft:#e2e8fd;
+  --on-pen:#ffffff;
+  --turtle:#0fa7bd;
+  --marker:#cf3a2a;
+  --marker-soft:#fbe6e2;
+  --grass:#1c8a4e;
+
+  /* code surface: deliberately constant in both themes */
+  --code-bg:#0e1622;
+  --code-line:#22304a;
+  --code-ink:#e8eefa;
+  --code-kw:#8fb0ff;
+  --code-str:#7fd6a6;
+  --code-num:#f0b46a;
+  --code-fn:#6fdbe8;
+  --code-com:#7c8ba3;
+
+  --r:10px;
+  --shadow:0 1px 2px rgba(17,29,46,.05), 0 12px 28px -18px rgba(17,29,46,.35);
+}
+/* ---------- Tokens: dark (system default, unless explicitly light) ---------- */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0b1017;
+    --surface:#131b26;
+    --surface-2:#18212e;
+    --ink:#e5ecf6;
+    --ink-2:#a7b6c9;
+    --ink-3:#7d8ca0;
+    --line:#26313f;
+    --line-soft:#1e2836;
+    --pen:#84a6ff;
+    --pen-soft:#1a2540;
+    --on-pen:#0b1017;
+    --turtle:#3ecadd;
+    --marker:#f4816f;
+    --marker-soft:#3a1f1b;
+    --grass:#54cb8d;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 30px -20px rgba(0,0,0,.9);
+  }
+}
+/* ---------- Tokens: dark (explicit) ---------- */
+:root[data-theme="dark"]{
+  --paper:#0b1017;
+  --surface:#131b26;
+  --surface-2:#18212e;
+  --ink:#e5ecf6;
+  --ink-2:#a7b6c9;
+  --ink-3:#7d8ca0;
+  --line:#26313f;
+  --line-soft:#1e2836;
+  --pen:#84a6ff;
+  --pen-soft:#1a2540;
+  --on-pen:#0b1017;
+  --turtle:#3ecadd;
+  --marker:#f4816f;
+  --marker-soft:#3a1f1b;
+  --grass:#54cb8d;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 30px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Literata",Georgia,"Times New Roman",serif;
+  font-size:16.5px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,.ui{font-family:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif}
+h1,h2,h3,h4{text-wrap:balance;margin:0}
+a{color:var(--pen)}
+:focus-visible{outline:2.5px solid var(--pen);outline-offset:2px;border-radius:4px}
+
+.shell{max-width:1160px;margin:0 auto;padding:0 22px}
+
+/* ---------- Hero ---------- */
+.hero{
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line-soft) 85%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line-soft) 85%, transparent) 1px, transparent 1px);
+  background-size:26px 26px;
+}
+.hero-in{
+  display:grid;gap:38px;align-items:center;
+  padding:56px 0 52px;
+  grid-template-columns:minmax(0,1fr);
+}
+@media (min-width:840px){ .hero-in{grid-template-columns:minmax(0,1.35fr) minmax(0,.9fr)} }
+.eyebrow{
+  font-family:"Familjen Grotesk",sans-serif;font-weight:600;font-size:12px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--turtle);
+  display:flex;align-items:center;gap:9px;
+}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line);max-width:120px}
+h1{
+  font-size:clamp(2.2rem,5.4vw,3.4rem);font-weight:700;line-height:1.02;
+  letter-spacing:-.025em;margin:16px 0 0;
+}
+h1 em{font-style:normal;color:var(--pen)}
+.lede{font-size:1.09rem;color:var(--ink-2);max-width:56ch;margin:16px 0 0}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.chip{
+  font-family:"Familjen Grotesk",sans-serif;font-size:12.5px;font-weight:500;
+  padding:5px 11px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink-2);
+}
+.chip.strong{background:var(--pen-soft);border-color:transparent;color:var(--pen);font-weight:600}
+.rosette{width:100%;max-width:290px;margin:0 auto;display:block}
+.rosette polyline{fill:none;stroke:var(--pen);stroke-width:1.1;stroke-linejoin:round;opacity:.85}
+.rosette .mark{fill:var(--turtle)}
+
+/* ---------- Layout ---------- */
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:44px;padding:44px 0 90px}
+@media (min-width:1040px){ .layout{grid-template-columns:198px minmax(0,1fr);gap:56px} }
+.rail{display:none}
+@media (min-width:1040px){
+  .rail{display:block;position:sticky;top:26px;align-self:start}
+}
+.rail-title{
+  font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:12px;
+}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;counter-reset:r}
+.rail a{
+  display:flex;gap:10px;text-decoration:none;color:var(--ink-2);
+  font-family:"Familjen Grotesk",sans-serif;font-size:14px;
+  padding:6px 9px;border-radius:7px;border-left:2px solid transparent;
+}
+.rail a:hover{background:var(--surface);color:var(--ink)}
+.rail a .n{color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:12.5px;padding-top:1px}
+.rail a.on{background:var(--surface);color:var(--ink);border-left-color:var(--pen);box-shadow:var(--shadow)}
+.rail a.on .n{color:var(--pen)}
+
+.main{min-width:0;max-width:780px;display:flex;flex-direction:column;gap:56px}
+section{scroll-margin-top:22px}
+h2{font-size:1.62rem;font-weight:700;letter-spacing:-.018em}
+h3{font-size:1.12rem;font-weight:600;letter-spacing:-.01em;margin-top:0}
+.sec-head{border-top:2px solid var(--ink);padding-top:14px;margin-bottom:20px}
+.sec-head .kicker{
+  font-family:"Familjen Grotesk",sans-serif;font-size:11.5px;font-weight:600;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  display:block;margin-bottom:7px;
+}
+p{margin:0 0 14px}
+.main > section > p:last-child{margin-bottom:0}
+
+/* ---------- Cards ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:20px 22px;box-shadow:var(--shadow);
+}
+.stack{display:flex;flex-direction:column;gap:18px}
+
+/* ---------- Plan table ---------- */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-family:"Familjen Grotesk",sans-serif;font-size:14.5px}
+th,td{text-align:left;padding:12px 15px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+thead th{
+  font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);
+  font-weight:600;background:var(--surface-2);border-bottom:1px solid var(--line);
+}
+tbody tr:last-child td{border-bottom:none}
+td .ds{font-variant-numeric:tabular-nums;font-weight:600;color:var(--pen);white-space:nowrap}
+td b{font-weight:600}
+td .sheet{
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12.5px;
+  color:var(--marker);white-space:nowrap;
+}
+
+/* ---------- Phase blocks ---------- */
+.phase-head{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+.phase-num{
+  flex:none;width:44px;height:44px;border-radius:11px;background:var(--pen);color:var(--on-pen);
+  display:grid;place-items:center;font-family:"Familjen Grotesk",sans-serif;
+  font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;
+}
+.phase-head h2{font-size:1.5rem}
+.phase-head .sub{
+  font-family:"Familjen Grotesk",sans-serif;font-size:12.5px;color:var(--ink-3);
+  margin-top:3px;display:flex;flex-wrap:wrap;gap:6px 12px;
+}
+.goal{
+  border-left:3px solid var(--turtle);padding:2px 0 2px 15px;margin:0 0 20px;
+  color:var(--ink-2);
+}
+.goal b{color:var(--ink);font-family:"Familjen Grotesk",sans-serif;font-size:13px;
+  letter-spacing:.07em;text-transform:uppercase;display:block;margin-bottom:3px;font-weight:600}
+
+/* ---------- Syntax / concept list ---------- */
+dl.concepts{margin:0;display:grid;gap:11px}
+@media (min-width:620px){ dl.concepts{grid-template-columns:auto minmax(0,1fr);gap:11px 18px} }
+dl.concepts dt{
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;
+  color:var(--pen);font-weight:600;
+}
+dl.concepts dd{margin:0;color:var(--ink-2);font-size:15.2px}
+@media (max-width:619px){ dl.concepts dd{margin:-6px 0 4px} }
+
+/* ---------- Code ---------- */
+.code{
+  background:var(--code-bg);border:1px solid var(--code-line);border-radius:var(--r);
+  overflow:hidden;
+}
+.code-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:9px 12px 9px 15px;border-bottom:1px solid var(--code-line);
+}
+.code-bar .name{
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;color:#9db0cc;
+}
+.copy{
+  font-family:"Familjen Grotesk",sans-serif;font-size:12px;font-weight:500;
+  background:transparent;border:1px solid var(--code-line);color:#c4d2e6;
+  padding:4px 10px;border-radius:6px;cursor:pointer;
+}
+.copy:hover{background:#1a2637;color:#fff}
+.copy.done{color:#7fd6a6;border-color:#2c4a3c}
+pre{
+  margin:0;padding:15px;overflow-x:auto;
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13.2px;line-height:1.62;
+  color:var(--code-ink);
+}
+.t-kw{color:var(--code-kw)} .t-str{color:var(--code-str)} .t-num{color:var(--code-num)}
+.t-fn{color:var(--code-fn)} .t-com{color:var(--code-com);font-style:italic}
+code.inl{
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.86em;
+  background:var(--pen-soft);color:var(--pen);padding:1.5px 5px;border-radius:5px;
+}
+
+/* ---------- Task box ---------- */
+.tasks{border:1px solid var(--marker);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.tasks-head{
+  background:var(--marker-soft);padding:11px 18px;border-bottom:1px solid var(--marker);
+  font-family:"Familjen Grotesk",sans-serif;font-weight:600;font-size:13px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--marker);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;
+}
+.tasks-head .file{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:0;text-transform:none}
+.tasks-body{padding:16px 18px}
+.tasks ul{margin:0;padding-left:19px}
+.tasks li{margin-bottom:6px}
+.tasks li:last-child{margin-bottom:0}
+.tag{
+  font-family:"Familjen Grotesk",sans-serif;font-size:10.5px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:4px;
+  margin-right:8px;vertical-align:1.5px;
+}
+.tag.must{background:var(--pen-soft);color:var(--pen)}
+.tag.plus{background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line)}
+
+/* ---------- Checklist ---------- */
+.check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.check li label{
+  display:flex;gap:11px;align-items:flex-start;padding:8px 10px;border-radius:8px;cursor:pointer;
+}
+.check li label:hover{background:var(--surface-2)}
+.check input{
+  appearance:none;flex:none;width:19px;height:19px;margin-top:3px;border-radius:5px;
+  border:1.8px solid var(--line);background:var(--surface);cursor:pointer;position:relative;
+}
+.check input:checked{background:var(--grass);border-color:var(--grass)}
+.check input:checked::after{
+  content:"";position:absolute;left:5.5px;top:2px;width:5px;height:10px;
+  border:solid #fff;border-width:0 2.2px 2.2px 0;transform:rotate(42deg);
+}
+.check input:checked ~ span{color:var(--ink-3);text-decoration:line-through}
+.check span{font-size:15.4px}
+
+.grid2{display:grid;gap:14px}
+@media (min-width:640px){ .grid2{grid-template-columns:1fr 1fr} }
+.mini h4{font-family:"Familjen Grotesk",sans-serif;font-size:14px;font-weight:600;margin:0 0 5px}
+.mini p{font-size:14.6px;color:var(--ink-2);margin:0}
+.mini .err{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--marker)}
+
+footer{
+  border-top:1px solid var(--line);padding:22px 0 40px;color:var(--ink-3);
+  font-family:"Familjen Grotesk",sans-serif;font-size:13px;
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+@media print{
+  body{background:#fff}
+  .rail,.copy,.hero{display:none}
+  .main{max-width:none}
+  .card,.code,.tasks,.tablewrap{break-inside:avoid;box-shadow:none}
+}
+</style>
+</head>
+<body>
+
+
+<header class="hero">
+  <div class="shell hero-in">
+    <div>
+      <div class="eyebrow">Informatik · Jahrgang 11 · Selbstlerneinheit</div>
+      <h1>Programmieren lernen mit der <em>Turtle</em></h1>
+      <p class="lede">Vier Doppelstunden, vier Konzepte: Schleifen, Funktionen, Variablen&nbsp;&amp;&nbsp;Parameter,
+      bedingte Anweisungen. Du liest kurz, tippst die Beispiele ab, löst die Aufgaben in TigerPython
+      und lädst deine Ergebnisse in IServ hoch.</p>
+      <div class="hero-meta">
+        <span class="chip strong">4 × 90 Minuten</span>
+        <span class="chip">TigerPython / TigerJython</span>
+        <span class="chip">Modul <code style="font-family:'JetBrains Mono',monospace;font-size:12px">gturtle</code></span>
+        <span class="chip">Abgabe: .py + Screenshot</span>
+      </div>
+    </div>
+    <svg class="rosette" viewBox="-115 -115 230 230" role="img" aria-label="Rosette aus zwölf gedrehten Sechsecken, gezeichnet von der Turtle">
+      <polyline id="rosettePath" points=""></polyline>
+      <circle class="mark" cx="0" cy="0" r="3.4"></circle>
+    </svg>
+  </div>
+</header>
+
+<div class="shell layout">
+
+  <nav class="rail" aria-label="Inhalt">
+    <div class="rail-title">Ablauf</div>
+    <ol>
+      <li><a href="#plan"><span class="n">–</span><span>Ablaufplan</span></a></li>
+      <li><a href="#setup"><span class="n">–</span><span>Setup</span></a></li>
+      <li><a href="#p1"><span class="n">1</span><span>Schleifen</span></a></li>
+      <li><a href="#p2"><span class="n">2</span><span>Funktionen</span></a></li>
+      <li><a href="#p3"><span class="n">3</span><span>Variablen &amp; Parameter</span></a></li>
+      <li><a href="#p4"><span class="n">4</span><span>Bedingungen</span></a></li>
+      <li><a href="#abgabe"><span class="n">–</span><span>Abgabe in IServ</span></a></li>
+      <li><a href="#hilfe"><span class="n">–</span><span>Wenn's klemmt</span></a></li>
+    </ol>
+  </nav>
+
+  <main class="main">
+
+    <!-- ===== Ablaufplan ===== -->
+    <section id="plan">
+      <div class="sec-head">
+        <span class="kicker">Überblick</span>
+        <h2>Der Ablaufplan</h2>
+      </div>
+      <p>In den nächsten Stunden erarbeitest du dir die wichtigsten Themen bei der Programmierung in
+      Python selbst. Ich habe dir die Themen in vier Abschnitte untergliedert. Wenn du mit einem
+      Abschnitt fertig bist, kannst du mit dem nächsten beginnen. Vergiss nicht, <b>zwei Dateien pro
+      Aufgabe</b> hochzuladen.</p>
+      <p>Ich werde herumgehen und individuell unterstützen. Wenn du Fragen hast, melde dich bei mir.</p>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>Stunde</th><th>Thema</th><th>Das kannst du danach</th><th>Aufgabenblatt</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ds">DS 1</td>
+              <td><b>Schleifen</b></td>
+              <td>Wiederholungen mit <code class="inl">repeat</code> und <code class="inl">for</code>, Vielecke, gefüllte Figuren</td>
+              <td><span class="sheet">A2, A3</span></td>
+            </tr>
+            <tr>
+              <td class="ds">DS 2</td>
+              <td><b>Funktionen</b></td>
+              <td>eigene Befehle mit <code class="inl">def</code> definieren und mehrfach aufrufen</td>
+              <td><span class="sheet">A4</span></td>
+            </tr>
+            <tr>
+              <td class="ds">DS 3</td>
+              <td><b>Variablen &amp; Parameter</b></td>
+              <td>Werte speichern, verändern und an Funktionen übergeben</td>
+              <td><span class="sheet">A5</span></td>
+            </tr>
+            <tr>
+              <td class="ds">DS 4</td>
+              <td><b>Bedingte Anweisungen</b></td>
+              <td>Entscheidungen mit <code class="inl">if / else</code>, Modulo, Zufall</td>
+              <td><span class="sheet">A6</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:16px;color:var(--ink-2);font-size:15.4px">
+      <b>Wichtig:</b> Die Beispielprogramme auf dieser Seite erklären das Prinzip – sie sind
+      <em>keine</em> Lösungen der Aufgaben. Verstehe erst das Beispiel, verändere es, und schreibe
+      dann dein eigenes Programm.</p>
+    </section>
+
+    <!-- ===== Setup ===== -->
+    <section id="setup">
+      <div class="sec-head">
+        <span class="kicker">Vor dem Start · 10 Minuten</span>
+        <h2>So arbeitest du</h2>
+      </div>
+      <div class="stack">
+        <div class="card">
+          <h3>1 · TigerPython öffnen</h3>
+          <p style="margin-bottom:0;color:var(--ink-2)">Starte TigerPython (bzw. TigerJython). Jedes Turtle-Programm
+          beginnt mit derselben Zeile: <code class="inl">from gturtle import *</code>. Danach holst du dir mit
+          <code class="inl">makeTurtle()</code> ein Zeichenfenster und eine Turtle, die in der Mitte startet
+          und nach oben schaut.</p>
+        </div>
+        <div class="code" data-lang="python" data-name="grundgeruest.py"><pre>from gturtle import *
+
+makeTurtle()
+
+forward(100)
+right(90)
+forward(100)</pre></div>
+        <div class="card">
+          <h3>2 · Die wichtigsten Turtle-Befehle</h3>
+          <dl class="concepts">
+            <dt>forward(s)</dt><dd>s Schritte vorwärts – kurz <code class="inl">fd(s)</code></dd>
+            <dt>back(s)</dt><dd>s Schritte rückwärts</dd>
+            <dt>right(w)</dt><dd>um w Grad nach rechts drehen (<code class="inl">left(w)</code> nach links)</dd>
+            <dt>dot(d)</dt><dd>gefüllten Punkt mit Durchmesser d zeichnen</dd>
+            <dt>setPenColor("red")</dt><dd>Stiftfarbe setzen, z.&nbsp;B. <code class="inl">"blue"</code>, <code class="inl">"green"</code></dd>
+            <dt>setFillColor("yellow")</dt><dd>Füllfarbe für gefüllte Figuren</dd>
+            <dt>startPath() … fillPath()</dt><dd>alles dazwischen wird als Fläche gefüllt</dd>
+            <dt>hideTurtle()</dt><dd>Turtle verstecken – zeichnet <b>viel</b> schneller</dd>
+            <dt>clean("blue")</dt><dd>Fenster löschen und blau einfärben</dd>
+            <dt>setPos(x, y)</dt><dd>Turtle an eine Position setzen</dd>
+          </dl>
+        </div>
+        <div class="card">
+          <h3>3 · Speichern und benennen</h3>
+          <p style="margin-bottom:0;color:var(--ink-2)">Lege dir einen Ordner <code class="inl">Turtle</code> an.
+          Jede Aufgabe wird eine eigene Datei nach diesem Muster:
+          <code class="inl">A4_1_Nachname.py</code> – also Blatt, Aufgabennummer, dein Name.
+          Details zur Abgabe stehen <a href="#abgabe">unten</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Phase 1 ===== -->
+    <section id="p1">
+      <div class="phase-head">
+        <div class="phase-num">1</div>
+        <div>
+          <h2>Schleifen</h2>
+          <div class="sub"><span>Doppelstunde 1</span><span>Aufgabenblätter A2 &amp; A3</span></div>
+        </div>
+      </div>
+
+      <p class="goal"><b>Ziel</b>Du erkennst Wiederholungen in einer Figur und drückst sie mit einer Schleife aus,
+      statt Befehle abzutippen.</p>
+
+      <p>Ein Quadrat besteht aus vier gleichen Schritten: hundert vorwärts, neunzig Grad nach rechts.
+      Statt diese zwei Zeilen viermal zu schreiben, sagst du der Turtle einmal, dass sie sie
+      wiederholen soll. Entscheidend ist die <b>Einrückung</b>: Alles, was um vier Leerzeichen
+      eingerückt unter <code class="inl">repeat</code> steht, gehört zur Schleife.</p>
+
+      <div class="stack">
+        <div class="code" data-lang="python" data-name="quadrat.py"><pre>from gturtle import *
+
+makeTurtle()
+
+repeat 4:
+    forward(100)
+    right(90)</pre></div>
+
+        <div class="card">
+          <h3>Zwei Schreibweisen</h3>
+          <p style="color:var(--ink-2)"><code class="inl">repeat n:</code> ist eine Besonderheit von TigerPython.
+          In jedem anderen Python schreibt man <code class="inl">for i in range(n):</code> – das versteht
+          TigerPython ebenfalls. Beide Programme zeichnen dasselbe. Gewöhne dich an die
+          <code class="inl">for</code>-Variante, denn du brauchst gleich die Zählvariable <code class="inl">i</code>.</p>
+          <dl class="concepts">
+            <dt>repeat 6:</dt><dd>wiederhole den eingerückten Block sechsmal</dd>
+            <dt>for i in range(6):</dt><dd>dasselbe, aber <code class="inl">i</code> zählt dabei 0, 1, 2, 3, 4, 5 mit</dd>
+            <dt>360 / n</dt><dd>der Drehwinkel für ein regelmäßiges n-Eck</dd>
+          </dl>
+        </div>
+
+        <p style="margin:0">Für ein regelmäßiges Vieleck gilt: Die Turtle muss sich insgesamt einmal
+        komplett drehen, also 360°. Bei sechs Ecken sind das 60° pro Ecke.</p>
+
+        <div class="code" data-lang="python" data-name="sechseck.py"><pre>from gturtle import *
+
+makeTurtle()
+
+# 6 Ecken -> 360 / 6 = 60 Grad pro Ecke
+for i in range(6):
+    forward(100)
+    left(60)</pre></div>
+
+        <p style="margin:0">Eine Schleife darf auch mehr als zwei Zeilen enthalten. Eine Treppenstufe
+        besteht aus einem Schritt nach oben und einem nach rechts – siebenmal wiederholt ergibt das
+        eine Treppe:</p>
+
+        <div class="code" data-lang="python" data-name="treppe.py"><pre>from gturtle import *
+
+makeTurtle()
+
+repeat 7:
+    forward(20)
+    right(90)
+    forward(20)
+    left(90)</pre></div>
+
+        <p style="margin:0">Und eine Schleife darf in einer anderen Schleife stecken. Die innere zeichnet
+        eine Figur, die äußere dreht sie weiter – so entstehen die Rosetten:</p>
+
+        <div class="code" data-lang="python" data-name="rosette.py"><pre>from gturtle import *
+
+makeTurtle()
+hideTurtle()
+
+repeat 12:            # 12 mal ein Quadrat ...
+    repeat 4:         # ... und jedes Quadrat aus 4 Seiten
+        forward(80)
+        right(90)
+    left(30)          # dann die ganze Figur weiterdrehen</pre></div>
+
+        <div class="card">
+          <h3>Gefüllte Figuren (Blatt A3)</h3>
+          <p style="margin-bottom:0;color:var(--ink-2)">Setze zuerst die Füllfarbe, dann zeichne die Figur
+          zwischen <code class="inl">startPath()</code> und <code class="inl">fillPath()</code>. Ein Kreis ist
+          dabei einfach ein Vieleck mit sehr vielen, sehr kurzen Seiten.</p>
+        </div>
+
+        <div class="code" data-lang="python" data-name="gefuellter_kreis.py"><pre>from gturtle import *
+
+makeTurtle()
+hideTurtle()
+setFillColor("green")
+
+startPath()
+repeat 360:
+    forward(1)
+    left(1)
+fillPath()</pre></div>
+
+        <div class="tasks">
+          <div class="tasks-head"><span>Jetzt du · Aufgaben</span><span class="file">A2_Schleifen.pdf · A3_Schleifen2.pdf</span></div>
+          <div class="tasks-body">
+            <ul>
+              <li><span class="tag must">Pflicht</span><b>A2 Nr. 1</b> – Sechseck, Fünfeck, Stern und Stern mit vielen Zacken (nur Wiederholungszahl und Winkel ändern)</li>
+              <li><span class="tag must">Pflicht</span><b>A2 Nr. 2</b> – Treppe mit 7 Stufen</li>
+              <li><span class="tag must">Pflicht</span><b>A2 Nr. 3</b> – Sonne aus Strahlen und Punkten (<code class="inl">back()</code> und <code class="inl">dot()</code>)</li>
+              <li><span class="tag must">Pflicht</span><b>A2 Nr. 4</b> – Perlenkette aus 18 Punkten</li>
+              <li><span class="tag must">Pflicht</span><b>A3 Nr. 1</b> – 6er-Stern, abwechselnd 140° und 80°, auf blauem Grund</li>
+              <li><span class="tag must">Pflicht</span><b>A3 Nr. 2</b> – zwei gefüllte Halbkreise</li>
+              <li><span class="tag plus">Kür</span><b>A2 Nr. 5</b> – Goldstein-Grafiken (a, b und eigene Varianten)</li>
+              <li><span class="tag plus">Kür</span><b>A3 Nr. 3</b> – Figur aus gefüllten und ungefüllten Kreisen</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Phase 2 ===== -->
+    <section id="p2">
+      <div class="phase-head">
+        <div class="phase-num">2</div>
+        <div>
+          <h2>Funktionen</h2>
+          <div class="sub"><span>Doppelstunde 2</span><span>Aufgabenblatt A4</span></div>
+        </div>
+      </div>
+
+      <p class="goal"><b>Ziel</b>Du gibst einer Folge von Befehlen einen Namen und kannst sie danach
+      wie einen eingebauten Turtle-Befehl benutzen.</p>
+
+      <p>Mit <code class="inl">def</code> erfindest du einen neuen Befehl. Der Block darunter ist der
+      „Bauplan“ – beim Definieren passiert noch nichts. Erst der <b>Aufruf</b>
+      <code class="inl">sechseck()</code> lässt die Turtle wirklich zeichnen. Die runden Klammern gehören
+      immer dazu, beim Definieren wie beim Aufrufen.</p>
+
+      <div class="stack">
+        <div class="code" data-lang="python" data-name="funktion_sechseck.py"><pre>from gturtle import *
+
+def sechseck():           # Bauplan: neuer Befehl
+    repeat 6:
+        forward(50)
+        left(60)
+
+makeTurtle()
+hideTurtle()
+
+sechseck()                # Aufruf: jetzt wird gezeichnet</pre></div>
+
+        <div class="card">
+          <h3>Warum sich das lohnt</h3>
+          <dl class="concepts">
+            <dt>Lesbarkeit</dt><dd>im Hauptprogramm steht, <em>was</em> passiert, nicht wie</dd>
+            <dt>Wiederverwendung</dt><dd>ein Befehl, beliebig oft aufrufbar – auch in einer Schleife</dd>
+            <dt>Fehlersuche</dt><dd>stimmt die Figur nicht, musst du nur an einer Stelle korrigieren</dd>
+          </dl>
+        </div>
+
+        <p style="margin:0">Der eigentliche Gewinn zeigt sich, wenn du deinen neuen Befehl in eine Schleife
+        steckst. Zwölf Sechsecke, jedes um 30° weitergedreht:</p>
+
+        <div class="code" data-lang="python" data-name="sechseck_rosette.py"><pre>from gturtle import *
+
+def sechseck():
+    repeat 6:
+        forward(50)
+        left(60)
+
+makeTurtle()
+hideTurtle()
+
+repeat 12:
+    sechseck()
+    left(30)</pre></div>
+
+        <p style="margin:0">Achte auf die Reihenfolge im Programm: Erst alle <code class="inl">def</code>-Blöcke,
+        dann <code class="inl">makeTurtle()</code>, dann das Hauptprogramm. Eine Funktion muss definiert sein,
+        bevor sie aufgerufen wird. Für ein Quadrat auf der Spitze drehst du die Turtle vorher um 45°:</p>
+
+        <div class="code" data-lang="python" data-name="raute.py"><pre>from gturtle import *
+
+def raute():
+    left(45)
+    repeat 4:
+        forward(60)
+        right(90)
+    right(45)             # Turtle wieder in die Ausgangsrichtung
+
+makeTurtle()
+hideTurtle()
+
+raute()</pre></div>
+
+        <div class="card">
+          <h3>Merke: aufräumen nicht vergessen</h3>
+          <p style="margin-bottom:0;color:var(--ink-2)">Eine gute Funktion hinterlässt die Turtle in einem
+          vorhersehbaren Zustand – am besten in Position und Richtung wie zu Beginn. Sonst stimmt beim
+          zweiten Aufruf nichts mehr.</p>
+        </div>
+
+        <div class="tasks">
+          <div class="tasks-head"><span>Jetzt du · Aufgaben</span><span class="file">A4_Funktionen.pdf</span></div>
+          <div class="tasks-body">
+            <ul>
+              <li><span class="tag must">Pflicht</span><b>A4 Nr. 1</b> – Befehl <code class="inl">sechseck()</code> definieren und damit die Rosette zeichnen</li>
+              <li><span class="tag must">Pflicht</span><b>A4 Nr. 2a</b> – Befehl für ein Quadrat auf der Spitze, damit die Kette aus vier Rauten zeichnen</li>
+              <li><span class="tag must">Pflicht</span><b>A4 Nr. 2b</b> – dieselbe Kette mit gefüllten Rauten</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Phase 3 ===== -->
+    <section id="p3">
+      <div class="phase-head">
+        <div class="phase-num">3</div>
+        <div>
+          <h2>Variablen &amp; Parameter</h2>
+          <div class="sub"><span>Doppelstunde 3</span><span>Aufgabenblatt A5</span></div>
+        </div>
+      </div>
+
+      <p class="goal"><b>Ziel</b>Du speicherst Werte in Variablen, veränderst sie in jedem Schleifendurchlauf
+      und übergibst sie als Parameter an deine eigenen Funktionen.</p>
+
+      <p>Eine <b>Variable</b> ist ein benannter Behälter für einen Wert. <code class="inl">s = 5</code> legt den
+      Wert 5 unter dem Namen <code class="inl">s</code> ab. Das Gleichheitszeichen ist dabei keine mathematische
+      Aussage, sondern ein Befehl: „Rechne die rechte Seite aus und speichere sie links.“ Deshalb ergibt
+      <code class="inl">s = s + 1</code> Sinn – es heißt: nimm den alten Wert, erhöhe ihn um eins, speichere ihn
+      wieder.</p>
+
+      <div class="stack">
+        <div class="code" data-lang="python" data-name="spirale.py"><pre>from gturtle import *
+
+makeTurtle()
+hideTurtle()
+
+s = 5                 # Startwert
+repeat 100:
+    forward(s)
+    right(90)
+    s = s + 2         # jede Seite 2 laenger als die vorige</pre></div>
+
+        <div class="card">
+          <h3>Zwei Arten, eine Variable weiterzuzählen</h3>
+          <dl class="concepts">
+            <dt>s = s + 2</dt><dd>gleichmäßiges Wachstum – es entsteht eine Spirale</dd>
+            <dt>s = s * 0.9</dt><dd>Wachstum um einen Faktor – die Figur schrumpft und dreht sich ein</dd>
+            <dt>range(1, 101)</dt><dd>Alternative: <code class="inl">for s in range(1, 101):</code> zählt s selbst hoch</dd>
+          </dl>
+        </div>
+
+        <p style="margin:0">Ein <b>Parameter</b> ist eine Variable, die eine Funktion beim Aufruf geschenkt
+        bekommt. So wird aus dem einen festen Quadrat ein Quadrat in jeder gewünschten Größe. Der Name
+        in den Klammern der <code class="inl">def</code>-Zeile ist der Parameter, der Wert beim Aufruf ist
+        das Argument:</p>
+
+        <div class="code" data-lang="python" data-name="square_parameter.py"><pre>from gturtle import *
+
+def square(s):            # s ist der Parameter
+    repeat 4:
+        forward(s)
+        right(90)
+
+makeTurtle()
+hideTurtle()
+
+square(30)                # kleines Quadrat
+square(80)                # grosses Quadrat</pre></div>
+
+        <p style="margin:0">Richtig stark wird das in Kombination mit einer Variablen, die sich pro
+        Durchlauf ändert – Funktion, Schleife und Variable greifen ineinander:</p>
+
+        <div class="code" data-lang="python" data-name="quadrat_faecher.py"><pre>from gturtle import *
+
+def square(s):
+    repeat 4:
+        forward(s)
+        right(90)
+
+makeTurtle()
+hideTurtle()
+
+s = 100
+repeat 40:
+    square(s)
+    right(9)              # Figur weiterdrehen
+    s = s * 0.97          # und ein wenig verkleinern</pre></div>
+
+        <div class="card">
+          <h3>Mehrere Parameter &amp; Zufallsfarben</h3>
+          <p style="color:var(--ink-2)">Eine Funktion darf mehrere Parameter haben, getrennt durch Komma.
+          Für Aufgabe 5 hilfreich: <code class="inl">getRandomX11Color()</code> liefert eine zufällige Farbe,
+          die du direkt an <code class="inl">setPenColor()</code> weitergeben kannst.</p>
+          <div class="code" data-lang="python" data-name="mehrere_parameter.py" style="margin-top:4px"><pre>from gturtle import *
+
+def vieleck(n, s):
+    repeat n:
+        forward(s)
+        left(360.0 / n)   # Punkt-Null, damit sauber geteilt wird
+
+makeTurtle()
+hideTurtle()
+
+vieleck(8, 40)            # Achteck mit Seitenlaenge 40
+vieleck(3, 90)            # Dreieck mit Seitenlaenge 90</pre></div>
+        </div>
+
+        <div class="tasks">
+          <div class="tasks-head"><span>Jetzt du · Aufgaben</span><span class="file">A5_FunktionenVariablenParameter.pdf</span></div>
+          <div class="tasks-body">
+            <ul>
+              <li><span class="tag must">Pflicht</span><b>A5 Nr. 1</b> – 100 Quadrate mit <code class="inl">square(s)</code>, Seitenlänge ab 180, Faktor 0.9</li>
+              <li><span class="tag must">Pflicht</span><b>A5 Nr. 2</b> – 250 Durchläufe, 70° Drehung, Strecke wächst um 1; dazu eigene Varianten</li>
+              <li><span class="tag must">Pflicht</span><b>A5 Nr. 4</b> – 120 Quadrate, Seitenlänge +2, Drehung 6°</li>
+              <li><span class="tag plus">Kür</span><b>A5 Nr. 3</b> – Spritebild in <code class="inl">makeTurtle()</code>, Spinne spinnt ihr Netz</li>
+              <li><span class="tag plus">Kür</span><b>A5 Nr. 5</b> – eigener Befehl <code class="inl">colorDot(d)</code> mit Zufallsfarbe</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Phase 4 ===== -->
+    <section id="p4">
+      <div class="phase-head">
+        <div class="phase-num">4</div>
+        <div>
+          <h2>Bedingte Anweisungen</h2>
+          <div class="sub"><span>Doppelstunde 4</span><span>Aufgabenblatt A6</span></div>
+        </div>
+      </div>
+
+      <p class="goal"><b>Ziel</b>Dein Programm trifft Entscheidungen: Es zeichnet je nach Situation
+      unterschiedlich – abhängig von einer Variablen, einer Position oder dem Zufall.</p>
+
+      <p>Eine Bedingung ist eine Frage, auf die es nur „ja“ oder „nein“ gibt. Ist die Antwort ja,
+      wird der eingerückte Block hinter <code class="inl">if</code> ausgeführt, sonst der hinter
+      <code class="inl">else</code>. Achte auf das doppelte Gleichheitszeichen: <code class="inl">=</code>
+      speichert, <code class="inl">==</code> vergleicht.</p>
+
+      <div class="stack">
+        <div class="card">
+          <h3>Vergleichen und verknüpfen</h3>
+          <dl class="concepts">
+            <dt>==  !=</dt><dd>gleich · ungleich</dd>
+            <dt>&lt;  &gt;  &lt;=  &gt;=</dt><dd>kleiner · größer · kleiner-gleich · größer-gleich</dd>
+            <dt>and  or  not</dt><dd>beide Bedingungen · mindestens eine · Umkehrung</dd>
+            <dt>a % b</dt><dd>Rest der Division – <code class="inl">8 % 3</code> ergibt 2</dd>
+            <dt>s % 2 == 0</dt><dd>ist wahr, wenn s gerade ist</dd>
+          </dl>
+        </div>
+
+        <p style="margin:0">Damit lässt sich die Spirale aus Doppelstunde 3 einfärben: gerade Runden grün,
+        ungerade rot.</p>
+
+        <div class="code" data-lang="python" data-name="spirale_zweifarbig.py"><pre>from gturtle import *
+
+makeTurtle()
+hideTurtle()
+
+s = 10
+repeat 200:
+    if s % 2 == 0:
+        setPenColor("green")
+    else:
+        setPenColor("red")
+    forward(s)
+    right(90)
+    s = s + 1</pre></div>
+
+        <p style="margin:0">Mit <code class="inl">elif</code> fragst du mehrere Fälle nacheinander ab. Geprüft
+        wird von oben nach unten; der erste zutreffende Block gewinnt:</p>
+
+        <div class="code" data-lang="python" data-name="drei_faelle.py"><pre>from gturtle import *
+
+makeTurtle()
+hideTurtle()
+
+s = 10
+repeat 150:
+    if s &lt; 60:
+        setPenColor("red")
+    elif s &lt; 120:
+        setPenColor("orange")
+    else:
+        setPenColor("green")
+    forward(s)
+    right(91)
+    s = s + 1</pre></div>
+
+        <div class="card">
+          <h3>Zufall: Punkte streuen</h3>
+          <p style="margin-bottom:0;color:var(--ink-2)"><code class="inl">randint(a, b)</code> aus dem Modul
+          <code class="inl">random</code> liefert eine ganze Zufallszahl zwischen a und b. Setzt du damit
+          viele Punkte und entscheidest per <code class="inl">if</code>, welche du überhaupt zeichnest,
+          entstehen aus Zufall gezielt Formen und Muster.</p>
+        </div>
+
+        <div class="code" data-lang="python" data-name="zufallspunkte.py"><pre>from gturtle import *
+from random import randint
+
+makeTurtle()
+hideTurtle()
+setPenColor("red")
+
+repeat 3000:
+    x = randint(-150, 150)
+    y = randint(-150, 150)
+    if y &gt; 0:                 # nur die obere Haelfte faerben
+        setPos(x, y)
+        dot(3)</pre></div>
+
+        <div class="tasks">
+          <div class="tasks-head"><span>Jetzt du · Aufgaben</span><span class="file">A6_Bedingte Anweisungen.pdf</span></div>
+          <div class="tasks-body">
+            <ul>
+              <li><span class="tag must">Pflicht</span><b>A6 Nr. 1a</b> – gestreiftes Muster aus Zufallspunkten</li>
+              <li><span class="tag must">Pflicht</span><b>A6 Nr. 1b</b> – Buchstabe H aus Zufallspunkten</li>
+              <li><span class="tag must">Pflicht</span><b>A6 Nr. 2a</b> – Spiralvorlage einfärben (innen rot, außen grün)</li>
+              <li><span class="tag must">Pflicht</span><b>A6 Nr. 2b</b> – Vier-Dreiecke-Figur über <code class="inl">s % 2</code></li>
+              <li><span class="tag plus">Kür</span><b>A6 Nr. 1c*</b> – die Maus-Figur im Kreis</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Abgabe ===== -->
+    <section id="abgabe">
+      <div class="sec-head" style="border-top-color:var(--marker)">
+        <span class="kicker" style="color:var(--marker)">Pflicht · am Ende jeder Doppelstunde</span>
+        <h2>Abgabe im IServ-Aufgabenmodul</h2>
+      </div>
+
+      <p>Für <b>jede gelöste Aufgabe</b> lädst du zwei Dateien hoch: das Programm als
+      <code class="inl">.py</code>-Datei und einen Screenshot des fertigen Turtle-Fensters. Beide
+      Dateien tragen denselben Namen, nur mit anderer Endung.</p>
+
+      <div class="stack">
+        <div class="card">
+          <h3>Dateinamen</h3>
+          <dl class="concepts">
+            <dt>A4_1_Nachname.py</dt><dd>dein Programm – Blatt, Aufgabennummer, dein Name</dd>
+            <dt>A4_1_Nachname.png</dt><dd>der passende Screenshot der Zeichnung</dd>
+            <dt>A2_2a_Nachname.py</dt><dd>bei Teilaufgaben den Buchstaben anhängen</dd>
+          </dl>
+          <p style="margin:14px 0 0;color:var(--ink-2);font-size:15.2px">Keine Umlaute, keine Leerzeichen
+          im Dateinamen. Schreibe in die erste Zeile jedes Programms einen Kommentar mit deinem Namen
+          und der Aufgabe, z.&nbsp;B. <code class="inl"># A4 Nr. 1 – Lena Mustermann</code>.</p>
+        </div>
+
+        <div class="grid2">
+          <div class="card mini">
+            <h4>Screenshot unter Windows</h4>
+            <p><b>Windows + Umschalt + S</b> drücken, den Bereich des Turtle-Fensters aufziehen,
+            dann in Paint einfügen und als PNG speichern.</p>
+          </div>
+          <div class="card mini">
+            <h4>Screenshot am Mac</h4>
+            <p><b>cmd + Umschalt + 4</b> drücken und den Bereich aufziehen. Das Bild liegt danach
+            auf dem Schreibtisch.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Checkliste vor dem Hochladen</h3>
+          <ul class="check" id="checklist">
+            <li><label><input type="checkbox" data-k="c1"><span>Das Programm läuft fehlerfrei durch und zeichnet die geforderte Figur.</span></label></li>
+            <li><label><input type="checkbox" data-k="c2"><span>In der ersten Zeile steht ein Kommentar mit meinem Namen und der Aufgabennummer.</span></label></li>
+            <li><label><input type="checkbox" data-k="c3"><span>Die Datei heißt nach dem Muster <code class="inl">Blatt_Nummer_Nachname.py</code>.</span></label></li>
+            <li><label><input type="checkbox" data-k="c4"><span>Der Screenshot zeigt das fertige Turtle-Fenster – nicht den ganzen Bildschirm.</span></label></li>
+            <li><label><input type="checkbox" data-k="c5"><span>.py und Screenshot heißen gleich und gehören zur selben Aufgabe.</span></label></li>
+            <li><label><input type="checkbox" data-k="c6"><span>Alle Dateien sind im IServ-Aufgabenmodul unter der richtigen Aufgabe hochgeladen.</span></label></li>
+            <li><label><input type="checkbox" data-k="c7"><span>Ich kann erklären, was jede Zeile meines Programms tut.</span></label></li>
+          </ul>
+          <p style="margin:12px 0 0;color:var(--ink-3);font-size:13.5px;font-family:'Familjen Grotesk',sans-serif">
+          Die Haken werden nur in deinem Browser gespeichert und nicht an IServ übertragen.</p>
+        </div>
+
+        <div class="card" style="border-color:var(--marker)">
+          <h3 style="color:var(--marker)">Weg in IServ</h3>
+          <p style="margin-bottom:0;color:var(--ink-2)">IServ → <b>Aufgaben</b> → Aufgabe der jeweiligen
+          Doppelstunde öffnen → <b>Datei hinzufügen</b> → beide Dateien auswählen → <b>Hochladen</b>.
+          Prüfe danach, ob beide Dateien in der Liste stehen. Nach Ablauf der Abgabefrist ist kein
+          Hochladen mehr möglich.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Hilfe ===== -->
+    <section id="hilfe">
+      <div class="sec-head">
+        <span class="kicker">Selbsthilfe</span>
+        <h2>Wenn's klemmt</h2>
+      </div>
+      <div class="grid2">
+        <div class="card mini">
+          <h4 class="err">IndentationError</h4>
+          <p>Die Einrückung stimmt nicht. Alles, was zu einer Schleife oder Funktion gehört, muss um
+          gleich viele Leerzeichen eingerückt sein – am besten immer vier.</p>
+        </div>
+        <div class="card mini">
+          <h4 class="err">NameError: forward</h4>
+          <p>Die erste Zeile <code class="inl">from gturtle import *</code> fehlt, oder du hast einen
+          Befehl falsch geschrieben. Groß- und Kleinschreibung zählt: <code class="inl">hideTurtle()</code>,
+          nicht <code class="inl">hideturtle()</code>.</p>
+        </div>
+        <div class="card mini">
+          <h4 class="err">SyntaxError am Zeilenende</h4>
+          <p>Der Doppelpunkt hinter <code class="inl">repeat 4</code>, <code class="inl">if …</code> oder
+          der <code class="inl">def</code>-Zeile fehlt. Oder eine Klammer ist nicht geschlossen.</p>
+        </div>
+        <div class="card mini">
+          <h4>Nichts passiert</h4>
+          <p><code class="inl">makeTurtle()</code> vergessen – oder du hast eine Funktion nur definiert
+          und nie aufgerufen. Der Aufruf steht ganz unten und darf nicht eingerückt sein.</p>
+        </div>
+        <div class="card mini">
+          <h4>Es zeichnet ewig</h4>
+          <p><code class="inl">hideTurtle()</code> direkt nach <code class="inl">makeTurtle()</code> einfügen.
+          Ohne sichtbare Turtle ist die Zeichnung um ein Vielfaches schneller.</p>
+        </div>
+        <div class="card mini">
+          <h4>Die Figur läuft aus dem Bild</h4>
+          <p>Startwerte verkleinern oder die Turtle vorher mit <code class="inl">back(150)</code> bzw.
+          <code class="inl">setPos(x, y)</code> versetzen.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="shell">Selbstlerneinheit Python · Jahrgang 11 · Aufgabenblätter A2–A6 · Abgabe im IServ-Aufgabenmodul</div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Hero: die Turtle zeichnet die Rosette aus A4 ---------- */
+  var pts = [], x = 0, y = 0, dir = -90; // -90 = nach oben
+  function fd(s){
+    var r = dir * Math.PI / 180;
+    x += Math.cos(r) * s; y += Math.sin(r) * s;
+    pts.push(x.toFixed(2) + "," + y.toFixed(2));
+  }
+  pts.push("0,0");
+  for (var k = 0; k < 12; k++){
+    for (var j = 0; j < 6; j++){ fd(46); dir -= 60; }   // sechseck()
+    dir -= 30;                                          // left(30)
+  }
+  var poly = document.getElementById("rosettePath");
+  if (poly){
+    poly.setAttribute("points", pts.join(" "));
+    try {
+      var len = poly.getTotalLength();
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reduce && len > 0){
+        poly.style.strokeDasharray = len;
+        poly.style.strokeDashoffset = len;
+        poly.style.transition = "stroke-dashoffset 4.5s cubic-bezier(.4,0,.2,1)";
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){ poly.style.strokeDashoffset = "0"; });
+        });
+      }
+    } catch(e){ /* Länge nicht ermittelbar – Rosette bleibt statisch */ }
+  }
+
+  /* ---------- Syntax-Hervorhebung für die Beispielprogramme ---------- */
+  var KW = "from|import|def|return|if|elif|else|for|while|in|and|or|not|repeat|True|False|None|is";
+  var RX = new RegExp(
+    "(#[^\\n]*)" +
+    "|(\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*')" +
+    "|\\b(" + KW + ")\\b" +
+    "|\\b(\\d+(?:\\.\\d+)?)\\b" +
+    "|\\b([A-Za-z_][A-Za-z0-9_]*)(?=\\s*\\()", "g");
+
+  function esc(s){
+    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+  function highlight(raw){
+    return esc(raw).replace(RX, function(m, com, str, kw, num, fn){
+      if (com) return '<span class="t-com">' + com + '</span>';
+      if (str) return '<span class="t-str">' + str + '</span>';
+      if (kw)  return '<span class="t-kw">'  + kw  + '</span>';
+      if (num) return '<span class="t-num">' + num + '</span>';
+      if (fn)  return '<span class="t-fn">'  + fn  + '</span>';
+      return m;
+    });
+  }
+
+  var blocks = document.querySelectorAll(".code");
+  Array.prototype.forEach.call(blocks, function(block){
+    var pre = block.querySelector("pre");
+    if (!pre) return;
+    var raw = pre.textContent;
+
+    var bar = document.createElement("div");
+    bar.className = "code-bar";
+    var name = document.createElement("span");
+    name.className = "name";
+    name.textContent = block.getAttribute("data-name") || "beispiel.py";
+    var btn = document.createElement("button");
+    btn.className = "copy";
+    btn.type = "button";
+    btn.textContent = "Kopieren";
+    btn.addEventListener("click", function(){
+      function ok(){
+        btn.textContent = "Kopiert";
+        btn.classList.add("done");
+        setTimeout(function(){ btn.textContent = "Kopieren"; btn.classList.remove("done"); }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(raw).then(ok, fallback);
+      } else { fallback(); }
+      function fallback(){
+        var ta = document.createElement("textarea");
+        ta.value = raw;
+        ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); ok(); }
+        catch(e){ btn.textContent = "Bitte manuell markieren"; }
+        document.body.removeChild(ta);
+      }
+    });
+    bar.appendChild(name); bar.appendChild(btn);
+    block.insertBefore(bar, pre);
+
+    pre.innerHTML = highlight(raw);
+  });
+
+  /* ---------- Checkliste merken (nur lokal im Browser) ---------- */
+  var boxes = document.querySelectorAll("#checklist input[type=checkbox]");
+  Array.prototype.forEach.call(boxes, function(box){
+    var key = "turtle-check-" + box.getAttribute("data-k");
+    try { if (localStorage.getItem(key) === "1") box.checked = true; } catch(e){}
+    box.addEventListener("change", function(){
+      try { localStorage.setItem(key, box.checked ? "1" : "0"); } catch(e){}
+    });
+  });
+
+  /* ---------- Navigation hervorheben ---------- */
+  var links = {};
+  Array.prototype.forEach.call(document.querySelectorAll(".rail a"), function(a){
+    links[a.getAttribute("href").slice(1)] = a;
+  });
+  if (window.IntersectionObserver){
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        var a = links[en.target.id];
+        if (!a) return;
+        if (en.isIntersecting){
+          Array.prototype.forEach.call(document.querySelectorAll(".rail a.on"), function(o){ o.classList.remove("on"); });
+          a.classList.add("on");
+        }
+      });
+    }, { rootMargin: "-15% 0px -70% 0px" });
+    Array.prototype.forEach.call(document.querySelectorAll("main section"), function(s){ obs.observe(s); });
+  }
+})();
+</script>
+
+</body>
+</html>
