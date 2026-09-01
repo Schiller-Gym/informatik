@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Uebersicht der Unterrichtsinhalte im Informatikunterricht.">
+<title>Informatik &ndash; Uebersicht</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+html{color-scheme:light dark}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+/* ---------- Tokens: light ---------- */
+:root{
+  --paper:#eaeef4;
+  --surface:#ffffff;
+  --surface-2:#f4f7fb;
+  --ink:#111d2e;
+  --ink-2:#48586e;
+  --ink-3:#78889c;
+  --line:#d2dae5;
+  --line-soft:#e3e9f1;
+  --pen:#1b46d6;
+  --pen-soft:#e2e8fd;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#0d1420;
+    --surface:#151f2e;
+    --surface-2:#1b2636;
+    --ink:#eef2f8;
+    --ink-2:#b7c2d3;
+    --ink-3:#8695ab;
+    --line:#2a3648;
+    --line-soft:#212c3d;
+    --pen:#6f97ff;
+    --pen-soft:#1e2c4d;
+  }
+}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Literata", Georgia, serif;
+  line-height:1.55;
+}
+.wrap{
+  max-width:960px;
+  margin:0 auto;
+  padding:48px 24px 80px;
+}
+header.page-head{
+  margin-bottom:40px;
+}
+header.page-head h1{
+  font-family:"Familjen Grotesk", sans-serif;
+  font-weight:700;
+  font-size:clamp(1.8rem, 3vw, 2.6rem);
+  margin:0 0 8px;
+  color:var(--ink);
+}
+header.page-head p{
+  margin:0;
+  color:var(--ink-2);
+  font-size:1.05rem;
+}
+.list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  gap:14px;
+}
+.list li{
+  border:1px solid var(--line);
+  background:var(--surface);
+  border-radius:12px;
+  transition:border-color .15s ease, transform .15s ease;
+}
+.list li:hover{
+  border-color:var(--pen);
+  transform:translateY(-1px);
+}
+.list a{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  padding:18px 20px;
+  text-decoration:none;
+  color:inherit;
+}
+.list a .title{
+  font-family:"Familjen Grotesk", sans-serif;
+  font-weight:600;
+  font-size:1.1rem;
+  color:var(--pen);
+}
+.list a .desc{
+  color:var(--ink-3);
+  font-size:.92rem;
+}
+footer.page-foot{
+  margin-top:48px;
+  color:var(--ink-3);
+  font-size:.85rem;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page-head">
+    <h1>Informatik &ndash; Unterrichtsinhalte</h1>
+    <p>Uebersicht ueber die Unterseiten dieses Projekts. Diese Seite wird laufend um neue Themen ergaenzt.</p>
+  </header>
+
+  <ul class="list">
+    <li>
+      <a href="Turtle-Werkstatt_Python.html">
+        <span class="title">Turtle-Werkstatt Python</span>
+        <span class="desc">Selbstlerneinheit fuer Jahrgang 11: Schleifen, Funktionen, Variablen und Parameter, bedingte Anweisungen mit gturtle.</span>
+      </a>
+    </li>
+    <!-- Neue Unterseiten hier als weiteres <li> ergaenzen -->
+  </ul>
+
+  <footer class="page-foot">
+    Weitere Themen folgen im Laufe der Zeit.
+  </footer>
+</div>
+</body>
+</html>
